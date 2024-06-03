@@ -2,7 +2,7 @@ import {
   MarketV2,
   Token,
 } from '@raydium-io/raydium-sdk';
-import { Keypair } from '@solana/web3.js';
+import { Keypair, PublicKey } from '@solana/web3.js';
 
 import {
   connection,
@@ -11,7 +11,7 @@ import {
   PROGRAMIDS,
   wallet,
 } from '../config';
-import { buildAndSendTx } from './util';
+import { buildAndSendTx, sleepTime } from './util';
 
 type TestTxInputInfo = {
   baseToken: Token
@@ -32,8 +32,27 @@ export async function createMarket(input: TestTxInputInfo) {
     makeTxVersion,
   })
 
-  return { txids: await buildAndSendTx(createMarketInstruments.innerTransactions) }
+  // await buildAndSendTx(createMarketInstruments.innerTransactions) }
+
+  const marketId = createMarketInstruments.address.marketId;
+
+  const tx = await buildAndSendTx(createMarketInstruments.innerTransactions, wallet, { skipPreflight: true });
+
+  await checkMarketIdExists(marketId);
+
+  return marketId;
 }
+
+export async function checkMarketIdExists(marketId: PublicKey): Promise<any> { 
+  let marketAccountInfo;
+
+  do {
+    marketAccountInfo = await connection.getAccountInfo(marketId);
+    console.log(marketAccountInfo);
+    await sleepTime(1000)
+  } while (!marketAccountInfo);
+
+} 
 
 async function howToUse() {
   const baseToken = DEFAULT_TOKEN.RAY // RAY

@@ -24,6 +24,7 @@ import {
   wallet,
 } from '../config';
 import { createMint, getOrCreateAssociatedTokenAccount, mintTo } from '@solana/spl-token';
+import { min } from 'bn.js';
 
 export async function sendTx(
   connection: Connection,
@@ -79,13 +80,19 @@ export async function sleepTime(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
-export const generateMint = async (mintAuthority: PublicKey, label: string, decimals: number) : Promise<Token> => {
-  const mint = await createMint(connection,
+export const generateMint = async (mintAuthority: PublicKey, label: string, decimals: number, mint?: PublicKey | undefined) : Promise<Token> => {
+  if (mint) {
+    const mintInfo = await connection.getAccountInfo(mint);
+    if (mintInfo != null) {
+      return new Token(TOKEN_PROGRAM_ID, mint, 6, label, label);
+    }
+  }
+  const newMint = await createMint(connection,
     wallet,
     mintAuthority,
     null,
     decimals);
-  return new Token(TOKEN_PROGRAM_ID, mint, 6, label, label);
+  return new Token(TOKEN_PROGRAM_ID, newMint, 6, label, label);
 }
 
 export const mintToAta = async (mintAuthority: Keypair, mint: PublicKey, to: PublicKey, amount: number) => {

@@ -24,6 +24,8 @@
     "build": "tsc",
     "clean": "tsc --build --clean",
     "amm-create-pool": "ts-node src/ammCreatePool.ts",
-    "ammv3-market": "ts-node src/ammV3MarketMaker/index.ts"
+    "amm2-create-pool": "ts-node src/ammCreatePool2.ts",
+    "ammv3-market": "ts-node src/ammV3MarketMaker/index.ts",
+    "swap-route": "ts-node src/swapRoute.ts"
   }
 }

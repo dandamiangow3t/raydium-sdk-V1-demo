@@ -82,6 +82,10 @@ async function howToUse() {
   const MINT_AUTHORITY = Keypair.generate();
   const baseToken = await generateMint(MINT_AUTHORITY.publicKey, "MY_USDC", DECIMALS);
   const quoteToken = await generateMint(MINT_AUTHORITY.publicKey, "MY_RAY", DECIMALS);
+  
+  console.log("baseToken", baseToken.mint.toBase58())
+  console.log("quoteToken", quoteToken.mint.toBase58())
+
   const marketKeyPair = Keypair.generate();
   const targetMarketId = marketKeyPair.publicKey;
 
@@ -101,7 +105,7 @@ async function howToUse() {
   await mintToAta(MINT_AUTHORITY, baseToken.mint, wallet.publicKey, addBaseAmount.toNumber());
   await mintToAta(MINT_AUTHORITY, quoteToken.mint, wallet.publicKey, addBaseAmount.toNumber());
 
-  const startTime = Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // start from 7 days later
+  const startTime = Math.floor(Date.now() / 1000) + 60 * 1000// start from now
   const walletTokenAccounts = await getWalletTokenAccount(connection, wallet.publicKey)
 
   /* do something with start price if needed */
